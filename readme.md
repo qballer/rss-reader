@@ -1,7 +1,7 @@
 ReadRSS 
 -------
-
 An RSS client leveraging web components and the bit CLI. 
+All components are meant to be sharable and utilize the bit cli platform to leverage that.
 
 Why ? 
 ---- 
@@ -17,4 +17,11 @@ Structure:
 1. Docs - containing blog post on the topics above.
 2. Assets - Images etc. 
 3. Source - containing all components, utilities required to run the app. 
-4. tests -
+4. tests - component testing shared via puppeteer.
+
+Tests
+----- 
+```bash
+npm run test
+```
+
