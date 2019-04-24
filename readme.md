@@ -21,6 +21,6 @@ Structure:
 Tests
 -----
 ```bash
-# npm run test - when tests part are ready.
+npm run test - only linting, prototype phase.
 ```
 

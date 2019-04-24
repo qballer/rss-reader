@@ -4,9 +4,9 @@
   "description": "",
   "main": "source/reader.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "",
-    "lint":""
+    "test": "npm run lint",
+    "start": "python -m SimpleHTTPServer 8000",
+    "lint": "node_modules/.bin/standard --fix"
   },
   "keywords": [],
   "author": "",
