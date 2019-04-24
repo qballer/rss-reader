@@ -10,6 +10,7 @@ For a while now I've been wanting to build an RSS reader which is pure browser a
 RSS Blog Series
 ---------------
 1. Prototyping Web Components - RSS overview - part (1). (events, client, store, elements)
+(more posts as we go along)
 
 Structure:
 1. Docs - containing blog post on t he topics above.
