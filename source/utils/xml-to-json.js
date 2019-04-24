@@ -4,7 +4,7 @@ export function xmlToJson (xml) {
   // Create the return object
   var obj = {}
 
-  if (xml.nodeType == 1) { // element
+  if (xml.nodeType === 1) { // element
     // do attributes
     if (xml.attributes.length > 0) {
       obj['@attributes'] = {}
@@ -13,7 +13,7 @@ export function xmlToJson (xml) {
         obj['@attributes'][attribute.nodeName] = attribute.nodeValue
       }
     }
-  } else if (xml.nodeType == 3) { // text
+  } else if (xml.nodeType === 3) { // text
     obj = xml.nodeValue
   }
 

@@ -1,1 +1,1 @@
-export { xmlToJson } from './xml-to-json'
+export { xmlToJson } from './xml-to-json.js'
