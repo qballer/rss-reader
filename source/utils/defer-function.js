@@ -2,6 +2,6 @@
 
 export function deferFunction (func, args) {
   return function () {
-    setTimeout(() => func(args), 0)
+    setTimeout(() => func(...args), 0)
   }
 }
