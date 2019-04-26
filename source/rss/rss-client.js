@@ -1,6 +1,7 @@
 import ky from 'https://unpkg.com/ky@0.10.0/index.js'
-import { xmlToJson, createFeedKey } from '../utils'
-import { eventRssItems } from './events'
+import { xmlToJson } from '../utils/xml-to-json.js'
+import { eventRssItems } from './events.js'
+import { createFeedKey } from './feed-key.js'
 
 async function start (name, url, emitter) {
   const fixedTimer = 10 * 1000
@@ -45,8 +46,8 @@ export function creatClient (emitter, data) {
       const key = createFeedKey(name, url)
       if (feeds[key]) {
         clearTimeout(feeds[key].timer)
+        delete feeds[key]
       }
-      delete feeds[key]
     },
     poll: async function ({ name, url }) {
       return pollFeed(name, url, emitter)

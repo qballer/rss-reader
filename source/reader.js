@@ -1,7 +1,9 @@
-import { start } from './components/rss-client.js/index.js'
+import { defineElements, elements } from './define-elements'
+import { createStore } from './rss'
 
 export function main () {
-  start()
+  defineElements(elements)
+  const emitter = new window.EventTarget()
+  const store = createStore(emitter)
+  store.getFeed()
 }
-
-// implement lru mechanism
