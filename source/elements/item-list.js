@@ -16,12 +16,12 @@ export class ItemList extends LitElement {
     return html`
     <div>
       ${this.list.map(item => html`
-        <rss-item
-          title="${item.title}"
-          guid=${item.guid}
-          link="${item.link}">
-          ${item.description}
-        </rss-item>`)}
+            <rss-item
+              title="${item.title}"
+              guid=${item.guid}
+              link="${item.link}">
+              ${item.description}
+            </rss-item>`)}
     </div>`
   }
 }
