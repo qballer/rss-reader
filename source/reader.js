@@ -5,9 +5,13 @@ export function main () {
   defineElements(elements)
   const emitter = new window.EventTarget()
   emitter.addEventListener(eventRssItemsStored, function (e) {
-    console.log('yo')
-    const feed = store.getFeed(e.data)
-    console.log('feed:', JSON.stringify(feed))
+    const feed = store.getFeed(e.detail.feedId)
+    renderFeed(feed)
   })
- const store = createStore(emitter)
+  const store = createStore({ emitter })
+}
+
+function renderFeed (feed) {
+  const element = document.querySelector('#main-list')
+  element.list = feed
 }
