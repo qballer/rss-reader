@@ -1,20 +1,20 @@
 import ky from 'https://unpkg.com/ky@0.10.0/index.js'
 import { xmlToJson } from '../utils/xml-to-json.js'
-import { eventRssItems } from './events.js'
+import { eventRssItems, createEvent } from './events.js'
 import { createFeedKey } from './feed-key.js'
 
 async function start (name, url, emitter) {
   const fixedTimer = 10 * 1000
 
-  function timerHandler () {
-    pollFeed(name, url, emitter)
+  async function timerHandler () {
+    await pollFeed(name, url, emitter)
     startData.timer = setTimeout(timerHandler, fixedTimer)
   }
 
   const startData = {
     name,
     url,
-    timer: setTimeout(timerHandler, fixedTimer)
+    timer: setTimeout(timerHandler, 0)
   }
   return startData
 }
@@ -23,7 +23,9 @@ async function pollFeed (name, url, emitter) {
   const feedUrl = `https://cors-anywhere.herokuapp.com/${url}` // hack to avoid cors problem
   const feed = await ky.get(feedUrl).text()
   const feedJSON = parseXML(feed)
-  emitter.dispatchEvent(new window.Event(eventRssItems, feedJSON))
+  feedJSON.name = name
+  feedJSON.url = url
+  emitter.dispatchEvent(createEvent(eventRssItems, feedJSON))
   return feedJSON
 }
 
@@ -31,10 +33,10 @@ function parseXML (toParse) {
   const parser = new window.DOMParser()
   const xml = parser.parseFromString(toParse, 'text/xml')
   const result = xmlToJson(xml)
-  return parseXML(result)
+  return result
 }
 
-export function creatClient (emitter, data) {
+export function createClient (emitter, data) {
   const feeds = {}
   const client = {
     startFeed: function ({ name, url }) {

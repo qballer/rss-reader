@@ -1,2 +1,2 @@
-export { Item as RSSItem } from './item.js'
-export { ItemList } from './item-list'
+export { RssItem } from './item.js'
+export { ItemList } from './item-list.js'

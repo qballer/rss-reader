@@ -1,6 +1,6 @@
 import { html, LitElement } from 'https://unpkg.com/lit-element?module'
 
-export class Item extends LitElement {
+export class RssItem extends LitElement {
   static get properties () {
     return {
       title: { type: String },

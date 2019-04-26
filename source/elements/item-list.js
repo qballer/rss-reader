@@ -19,7 +19,7 @@ export class ItemList extends LitElement {
         <rss-item
           title="${item.title}"
           guid=${item.guid}
-          link="${item.guid}">
+          link="${item.link}">
           ${item.description}
         </rss-item>`)}
     </div>`

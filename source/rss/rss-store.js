@@ -1,6 +1,6 @@
 import { createClient } from './rss-client.js'
 import { createFeedKey } from './feed-key.js'
-import { eventRssItems, eventRssItemsStored } from './events.js'
+import { eventRssItems, eventRssItemsStored, createEvent } from './events.js'
 
 export function createStore (
   { emitter = new window.EventTarget(),
@@ -32,16 +32,17 @@ export function createStore (
       delete data[key]
     },
     getFeed: async function (info, amount = 10) {
-
+      console.log('get feed')
     },
     addToFeed: async function (info) {
-      const key = createFeedKey(info.name, info.url)
-
-      emitter.dispatchEvent(new window.Event(eventRssItemsStored, { feedId: key }))
+      const data = info.detail
+      const key = createFeedKey(data.name, data.url)
+      console.log('you should store data')
+      return emitter.dispatchEvent(createEvent(eventRssItemsStored, { feedId: key }))
     }
   }
 
-  emitter.addEventListener(eventRssItems, data.addToFeed.bind(data))
+  emitter.addEventListener(eventRssItems, (e) => setTimeout(() => store.addToFeed(e), 0))
 
   return store
 }
