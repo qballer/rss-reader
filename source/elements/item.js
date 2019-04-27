@@ -5,7 +5,8 @@ export class RssItem extends LitElement {
     return {
       title: { type: String },
       guid: { type: String },
-      link: { type: URL }
+      link: { type: URL },
+      isRead: { type: Boolean }
     }
   }
 
@@ -14,6 +15,7 @@ export class RssItem extends LitElement {
     this.title = ''
     this.guid = ''
     this.link = new URL('javascript:;')
+    this.isRead = false
   }
 
   render () {
