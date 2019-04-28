@@ -18,7 +18,6 @@ export class NavBar extends LitElement {
 
   changeCurrent (e) {
     const { url, name } = e
-    console.log(name, url)
     this.emitter.dispatchEvent(createEvent(eventChangeCurrent, { name, url }))
   }
 
