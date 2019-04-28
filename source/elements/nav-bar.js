@@ -16,7 +16,9 @@ export class NavBar extends LitElement {
     this.changeCurrent = this.changeCurrent.bind(this)
   }
 
-  changeCurrent (name, url) {
+  changeCurrent (e) {
+    const { url, name } = e
+    console.log(name, url)
     this.emitter.dispatchEvent(createEvent(eventChangeCurrent, { name, url }))
   }
 
@@ -25,7 +27,8 @@ export class NavBar extends LitElement {
       <nav>
         ${this.list.map((listItem) => html`
         <nav-item
-        changeCurrent=${this.changeCurrent}
+          @click=${this.changeCurrent}
+          changeCurrent=${this.changeCurrent}
           url=${listItem.url}
           name=${listItem.name}>
         </nav-item>`)}

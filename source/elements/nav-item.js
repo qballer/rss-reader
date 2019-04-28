@@ -13,16 +13,17 @@ export class NavItem extends LitElement {
     super()
     this.name = ''
     this.url = new URL('javascript:;')
-    this.notifyChange = this.notifyChange.bind(this)
+    this.enrichChangeEvent = this.enrichChangeEvent.bind(this)
   }
 
-  notifyChange (e) {
-    this.changeCurrent(this.name, this.url)
+  enrichChangeEvent (e) {
+    e.name = this.name
+    e.url = this.url
   }
 
   render () {
     return html`
-        <div @click=${this.notifyChange}>${this.name}</div>
+        <div @click=${this.enrichChangeEvent}>${this.name}</div>
     `
   }
 }

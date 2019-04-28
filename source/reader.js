@@ -6,7 +6,7 @@ export function main () {
   defineElements(elements)
   const store = createStore()
   hookUpEvents(store)
-  topLevelRender(store.getSideBarList(), '#side-bar')
+  topLevelRender(store.getSideBarList(), '#side-bar', store.emitter)
 }
 
 function hookUpEvents (store) {

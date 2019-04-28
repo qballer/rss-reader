@@ -45,7 +45,9 @@ export function createStore (
     },
 
     changeCurrentFeed: function (e) {
-      console.log(e)
+      const key = createFeedKey(e.detail.name, e.detail.url)
+      current = key
+      return emitter.dispatchEvent(createEvent(eventUpdateCurrentList, { feedId: key }))
     },
 
     addToFeed: async function (info) {
