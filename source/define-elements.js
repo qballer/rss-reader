@@ -1,5 +1,3 @@
-import { RssItem, ItemList, SideBar } from './elements/index.js'
-
 export function defineElements (elements) {
   const toKebabCase = str =>
     str &&
@@ -12,5 +10,3 @@ export function defineElements (elements) {
     window.customElements.define(toKebabCase(element.name), element)
   })
 }
-
-export const elements = [RssItem, ItemList, SideBar]

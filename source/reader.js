@@ -1,5 +1,6 @@
-import { defineElements, elements } from './define-elements.js'
+import { defineElements } from './define-elements.js'
 import { createStore, eventRssItemsStored, sideBarListUpdated } from './rss/index.js'
+import { elements } from './elements/index.js'
 
 export function main () {
   defineElements(elements)
