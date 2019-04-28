@@ -1,5 +1,6 @@
 export const eventRssItems = 'rss-item'
 export const eventRssItemsStored = 'rss-items-stored'
+export const sideBarListUpdated = 'rss-items-stored'
 
 export function createEvent (name, data) {
   const options = {

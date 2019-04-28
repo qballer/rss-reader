@@ -1,4 +1,4 @@
-import { RssItem, ItemList } from './elements/index.js'
+import { RssItem, ItemList, SideBar } from './elements/index.js'
 
 export function defineElements (elements) {
   const toKebabCase = str =>
@@ -13,4 +13,4 @@ export function defineElements (elements) {
   })
 }
 
-export const elements = [RssItem, ItemList]
+export const elements = [RssItem, ItemList, SideBar]

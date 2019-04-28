@@ -1,17 +1,25 @@
 import { defineElements, elements } from './define-elements.js'
-import { createStore, eventRssItemsStored } from './rss/index.js'
+import { createStore, eventRssItemsStored, sideBarListUpdated } from './rss/index.js'
 
 export function main () {
   defineElements(elements)
-  const emitter = new window.EventTarget()
-  emitter.addEventListener(eventRssItemsStored, function (e) {
-    const feed = store.getFeed(e.detail.feedId)
-    renderFeed(feed)
-  })
-  const store = createStore({ emitter })
+  const store = createStore()
+  hookUpEvents(store)
+  topLevelRender(store.getSideBarList(), '#side-bar')
 }
 
-function renderFeed (feed) {
-  const element = document.querySelector('#main-list')
+function hookUpEvents (store) {
+  store.emitter.addEventListener(eventRssItemsStored, function (e) {
+    const feed = store.getFeed(e.detail.feedId)
+    topLevelRender(feed, '#main-list')
+  })
+  store.emitter.addEventListener(sideBarListUpdated, function (e) {
+    const list = store.getSideBarList()
+    topLevelRender(list, '#side-bar')
+  })
+}
+
+function topLevelRender (feed, selector) {
+  const element = document.querySelector(selector)
   element.list = feed
 }

@@ -21,12 +21,12 @@ export class RssItem extends LitElement {
   render () {
     return html`
       <span key=${this.guid}>
-        <a href=${this.link}><h1>${this.title}</h1></a>
-        <slot></slot>
+        <a href=${this.link}  target="_blank"><h4>${this.title}</h4></a>
+       <slot></slot>
       </span>
     `
   }
 }
 
-// global scope.
+// global scope - no.
 // window.customElements.define('rss-item', Item)
