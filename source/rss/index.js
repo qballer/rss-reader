@@ -1,2 +1,2 @@
 export { createStore } from './rss-store.js'
-export { eventRssItemsStored, sideBarListUpdated } from './events.js'
+export { eventUpdateCurrentList, eventRSSChannelsUpdates } from './events.js'

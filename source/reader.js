@@ -1,5 +1,5 @@
 import { defineElements } from './define-elements.js'
-import { createStore, eventRssItemsStored, sideBarListUpdated } from './rss/index.js'
+import { createStore, eventUpdateCurrentList, eventRSSChannelsUpdates } from './rss/index.js'
 import { elements } from './elements/index.js'
 
 export function main () {
@@ -10,17 +10,20 @@ export function main () {
 }
 
 function hookUpEvents (store) {
-  store.emitter.addEventListener(eventRssItemsStored, function (e) {
-    const feed = store.getFeed(e.detail.feedId)
+  store.emitter.addEventListener(eventUpdateCurrentList, function (e) {
+    const feed = store.getCurrentFeed()
     topLevelRender(feed, '#main-list')
   })
-  store.emitter.addEventListener(sideBarListUpdated, function (e) {
+  store.emitter.addEventListener(eventRSSChannelsUpdates, function (e) {
     const list = store.getSideBarList()
-    topLevelRender(list, '#side-bar')
+    topLevelRender(list, '#side-bar', store.emitter)
   })
 }
 
-function topLevelRender (feed, selector) {
+function topLevelRender (feed, selector, emitter) {
   const element = document.querySelector(selector)
   element.list = feed
+  if (emitter) {
+    element.emitter = emitter
+  }
 }
