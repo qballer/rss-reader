@@ -2,5 +2,12 @@
     "env": {},
     "dependencies": {},
     "componentsDefaultDirectory": "components/{name}",
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "overrides": {
+        "*":{
+            "dependencies": {
+                "https:": "-"
+            }
+        }
+    }
 }

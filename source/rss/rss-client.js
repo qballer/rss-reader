@@ -49,5 +49,3 @@ async function pollFeed (name, url, emitter) {
   emitter.dispatchEvent(createEvent(eventRssItems, feed))
   return feed
 }
-
-

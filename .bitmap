@@ -13,5 +13,137 @@
         "origin": "AUTHORED",
         "exported": true
     },
-    "version": "14.0.6"
+    "qballer.rss-reader/elements@0.0.3": {
+        "files": [
+            {
+                "relativePath": "source/elements/elements.js",
+                "test": false,
+                "name": "elements.js"
+            }
+        ],
+        "mainFile": "source/elements/elements.js",
+        "origin": "AUTHORED",
+        "exported": true
+    },
+    "qballer.rss-reader/item-list@0.0.3": {
+        "files": [
+            {
+                "relativePath": "source/elements/item-list.js",
+                "test": false,
+                "name": "item-list.js"
+            }
+        ],
+        "mainFile": "source/elements/item-list.js",
+        "origin": "AUTHORED",
+        "exported": true
+    },
+    "qballer.rss-reader/rss-item@0.0.3": {
+        "files": [
+            {
+                "relativePath": "source/elements/rss-item.js",
+                "test": false,
+                "name": "rss-item.js"
+            }
+        ],
+        "mainFile": "source/elements/rss-item.js",
+        "origin": "AUTHORED",
+        "exported": true
+    },
+    "qballer.rss-reader/nav-bar@0.0.3": {
+        "files": [
+            {
+                "relativePath": "source/elements/nav-bar.js",
+                "test": false,
+                "name": "nav-bar.js"
+            }
+        ],
+        "mainFile": "source/elements/nav-bar.js",
+        "origin": "AUTHORED",
+        "exported": true
+    },
+    "qballer.rss-reader/nav-item@0.0.3": {
+        "files": [
+            {
+                "relativePath": "source/elements/nav-item.js",
+                "test": false,
+                "name": "nav-item.js"
+            }
+        ],
+        "mainFile": "source/elements/nav-item.js",
+        "origin": "AUTHORED",
+        "exported": true
+    },
+    "qballer.rss-reader/rss-client@0.0.3": {
+        "files": [
+            {
+                "relativePath": "source/rss/rss-client.js",
+                "test": false,
+                "name": "rss-client.js"
+            }
+        ],
+        "mainFile": "source/rss/rss-client.js",
+        "origin": "AUTHORED",
+        "exported": true
+    },
+    "qballer.rss-reader/rss-store@0.0.3": {
+        "files": [
+            {
+                "relativePath": "source/rss/rss-store.js",
+                "test": false,
+                "name": "rss-store.js"
+            }
+        ],
+        "mainFile": "source/rss/rss-store.js",
+        "origin": "AUTHORED",
+        "exported": true
+    },
+    "qballer.rss-reader/events@0.0.3": {
+        "files": [
+            {
+                "relativePath": "source/rss/events.js",
+                "test": false,
+                "name": "events.js"
+            }
+        ],
+        "mainFile": "source/rss/events.js",
+        "origin": "AUTHORED",
+        "exported": true
+    },
+    "qballer.rss-reader/feed-key@0.0.3": {
+        "files": [
+            {
+                "relativePath": "source/rss/feed-key.js",
+                "test": false,
+                "name": "feed-key.js"
+            }
+        ],
+        "mainFile": "source/rss/feed-key.js",
+        "origin": "AUTHORED",
+        "exported": true
+    },
+    "qballer.rss-reader/defer-function@0.0.3": {
+        "files": [
+            {
+                "relativePath": "source/utils/defer-function.js",
+                "test": false,
+                "name": "defer-function.js"
+            }
+        ],
+        "mainFile": "source/utils/defer-function.js",
+        "origin": "AUTHORED",
+        "exported": true
+    },
+    "qballer.rss-reader/utils/define-elements@0.0.3": {
+        "files": [
+            {
+                "relativePath": "source/utils/define-elements.js",
+                "test": false,
+                "name": "define-elements.js"
+            }
+        ],
+        "mainFile": "source/utils/define-elements.js",
+        "origin": "AUTHORED",
+        "exported": true
+    },
+    "version": "14.1.0"
 }

@@ -160,11 +160,15 @@ Lets review the main entry points of the app to grasp what going on.
 </html>
 ```
 
-You can see
+Here is the main function in the `reader.js` file:
 
-`reader.js`
 ```javascript
-
+export function main () {
+  defineElements(elements) // define all elements in one place
+  const store = createStore() // create main store to update for new channels
+  hookUpEvents(store) // define main events from the ui to the store.
+  topLevelRender(store.getSideBarList(), '#side-bar', store.emitter) // render side-bar.
+}
 ```
 Project Structure - taking modularity to heart.
 -----------------------------
