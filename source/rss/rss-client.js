@@ -2,7 +2,7 @@ import { eventRssItems, createEvent } from './events.js'
 import { createFeedKey } from './feed-key.js'
 
 async function start (name, url, emitter) {
-  const fixedTimer = 10 * 1000
+  const fixedTimer = 10 * 1000 // 10 seconds
 
   async function timerHandler () {
     await pollFeed(name, url, emitter)
