@@ -27,9 +27,30 @@ In it's core, web components allow you to develop an encapsulated component from
 These 3 API's together allow you to encapsulate the functionality of a component and isolate it from the rest of the APP in ease.
 It also allows you to essentially extend your DOM api with additional tags.
 
-How does lit element work ?
+How does lit work ?
 -----------------------------
-Lit is an abstraction on top of the low level vanilla api
+Lit is an abstraction on top of the vanilla api which provides two main things:
+ - lit-html a library for html templating. This library provides an easy way to create html template. It basically allows you to create re-useable html templates in the javascript context. The library uses a great feature called tagged templates, shipped with es6 which looks like this:
+```javascript
+    tag`some ${boilerPlate} in my string`
+```
+this feature allows us to parse the string with a custom function. This is the core of lit-html, which allows us to combine templating in our javascipt
+directly in the browser. In the case of lit a render function inside a lit element component can contain an expression like the following:
+
+```javascript
+    // bind function to click
+    // bind text to button body
+    html`<button @click=${myFunc}>${buttonText}</button>`
+
+    // it can also be composable and conditional
+    // here we see internal lit components rendered according to a condition.
+    html`<div>${isReady ? html`<main-app>`: html`<app-load/>` }</div>`
+```
+
+for more information on the lit syntax I suggest your read from their docs [here](https://lit-html.polymer-project.org/guide/template-reference).
+
+ -  lit-element - base class for components. In the modern era we need to manage the life cycle of the component. Yea, we can do this from javascript without any abstractions on top of that. What lit-element does for us is give us a way to define props, hook to component lifcycle and unified component interface.
+ We will go over a component later with more details.
 
 RSS-Reader - this is so 2006 (5,4,3) ?
 -----------------------------
@@ -45,12 +66,11 @@ Some general design decision:
 5. This project uses timers and `eventTarget` heavily instead of workers. Workers don't play well with es6 modules (yet? TODO: enter FF/Chrome issues). When those reach to full working state, I would be more than happy refactor.
 6. This repos is in the prototyping phase and so it doesn't contain tests. I believe in tests, and will insert them in the future. This may go against TDD but I feel wouldn't contribute to the learning process currently. When it would be added I will share the refactoring needed to introduce tests.
 
-
 Project Structure - taking modulraity to heart.
 -----------------------------
 1. `index.html` - as the main layout of the project.
 2. `reader.js` - the main javascript file of the project, setting up event emitters.
-3. elements folder - containing lit-element web components:
+3. elements folder - lit-element web components.
    1. `item-list.js` - the feed item list rendering the current selected feed.
    2. `nav-bar.js` - edit feeds and consume them.
    3. `rss-item.js/nav-item.js` - representing a single fragment inside their respective lists.
@@ -61,18 +81,146 @@ Project Structure - taking modulraity to heart.
    4. `rss-store` - the application main state.
 5. utils folder
    1. `defer-function.js` used to make dispatch events async.
-   2. `define-elements.js` - escape web components global as much as possibile.
+   2. `define-elements.js` - escape web components global as much as possible.
 
+Whats worth noting about the structure of the app, is that it has modularity at heart. All the folders in the project basically contain components of different kinds. Our main drive for reusability is the bit CLI. Bit is a tool which helps your write more modular code, it does so managing the source code and dependencies of a component. Since I've started working with bit it has impacted the way I was thinking about modularity and separation of concerns in a deep way. Bit won't save you from writing bad code, but the add and export process forces you to at least consider it. The added benefit is that you can share components between future projects, or existing ones.
 
 
 Highlights from the Reader
 -------------------------
+Lets go over two components from this app, in order to better.
+Here is the code for the rss client component.
+
+```javascript
+
+//imports include a .js file because these are es6 modules (detailed later)
+import { eventRssItems, createEvent } from './events.js'
+import { createFeedKey } from './feed-key.js'
+
+// creates a client object with the startFeed, stopFeed, and poll functions
+// emitter - communication medium to dispatch events
+// data - array of url:string and name:string to identify channels
+export function createClient (emitter, data) {
+  const feeds = {}
+  const client = {
+    // Receives a data object with name and url and starts to track it over time
+    startFeed: function ({ name, url }) {
+      const key = createFeedKey(name, url) // createFeedKey is the primary key for channels in the app.
+      feeds[createFeedKey(name, url)] = feeds[key] || start(name, url, emitter)
+      return feeds[key]
+    },
+    // Receives a data object with name and url and stops tracking it.
+    stopFeed: function ({ name, url }) {
+      const key = createFeedKey(name, url)
+      if (feeds[key]) {
+        clearTimeout(feeds[key].timer)
+        delete feeds[key]
+      }
+    },
+    // poll a feed one time
+    poll: async function ({ name, url }) {
+      return pollFeed(name, url, emitter)
+    }
+  }
+  // start
+  Object.values(data).map((value) => client.startFeed(value))
+  return client
+}
+// creates a timer for a feed  which runs every fixedTimer milliseconds
+async function start (name, url, emitter) {
+  const fixedTimer = 10 * 1000 // 10 seconds
+
+  async function timerHandler () {
+    await pollFeed(name, url, emitter)
+    startData.timer = setTimeout(timerHandler, fixedTimer)
+  }
+
+  const startData = {
+    name,
+    url,
+    timer: setTimeout(timerHandler, 0)
+  }
+  return startData
+}
+// using the RSSParser package parsed a specific feed.
+async function pollFeed (name, url, emitter) {
+  const feedUrl = `https://cors-anywhere.herokuapp.com/${url}` // hack to avoid cors problem
+  const parser = new window.RSSParser()
+  const feed = await parser.parseURL(feedUrl)
+  feed.name = name
+  feed.url = url
+  emitter.dispatchEvent(createEvent(eventRssItems, feed))
+  return feed
+}
+```
+
+The main point to notice in this component is the inversion of control, main dependencies of the client are received in the factory function.
+I've also used a setTimeout function which calls it's self as the main timer for the polling the feed. It happens here every 10s just to make things
+easier to debug.
+
+
+Here is the main code for the nav-bar component.
+```javascript
+// imports are all es6 modules
+import { html, LitElement } from 'https://unpkg.com/lit-element?module'
+import { createEvent, eventChangeCurrent } from '../rss/events.js'
+
+// we extend the LitElement component to have a common life cycle.
+export class NavBar extends LitElement {
+
+// lit uses this static function to track the properties the component needs to recieve
+// every time these properties change it will re-render.
+  static get properties () {
+    return {
+      list: { type: Array }, // notice we use the built in Array class as type
+      emitter: { type: Object }
+    }
+  }
+
+  constructor () {
+    super()
+    this.list = [] // we need to initialize our properties
+    this.emitter = {}
+    this.changeCurrent = this.changeCurrent.bind(this) // bind changeCurrent before passing it to lit int the render function
+  }
+
+    // click handler.
+  changeCurrent (e) {
+    const { url, name } = e
+    // like in our rss client, all communication is done via event emitters
+    this.emitter.dispatchEvent(createEvent(eventChangeCurrent, { name, url }))
+  }
+
+  render () {
+    // we return an html function call to parse our html template
+    return html`
+      <nav>
+        <!-- inner lit components are composed with another template -->
+        ${this.list.map((listItem) => html`
+        <!-- all custom element must use a '-' in the name, so the browser will ignore them on initial rendering-->
+        <nav-item
+        <!-- syntax for binding an event handler -->
+          @click=${this.changeCurrent}
+        <!-- pass in properties as attributes on the -->
+          changeCurrent=${this.changeCurrent}
+          url=${listItem.url}
+          name=${listItem.name}>
+        </nav-item>`)}
+      </nav>
+    `
+  }
+}
+
+// in most code example you would see window.customElements.define call to
+// register the component in the browser. I see this as a bad habit to use global.
+// 
+```
 
 some issues on web components
 -----------------------------
 1. lit element static html rendering - unsafeHtml
 2. customElements.define is global.
 3. not so simple to reuse.
+4. es6 modules .js files
 
 
-todo: add

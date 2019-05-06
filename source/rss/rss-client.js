@@ -1,6 +1,29 @@
 import { eventRssItems, createEvent } from './events.js'
 import { createFeedKey } from './feed-key.js'
 
+export function createClient (emitter, data) {
+  const feeds = {}
+  const client = {
+    startFeed: function ({ name, url }) {
+      const key = createFeedKey(name, url)
+      feeds[createFeedKey(name, url)] = feeds[key] || start(name, url, emitter)
+      return feeds[key]
+    },
+    stopFeed: function ({ name, url }) {
+      const key = createFeedKey(name, url)
+      if (feeds[key]) {
+        clearTimeout(feeds[key].timer)
+        delete feeds[key]
+      }
+    },
+    poll: async function ({ name, url }) {
+      return pollFeed(name, url, emitter)
+    }
+  }
+  Object.values(data).map((value) => client.startFeed(value))
+  return client
+}
+
 async function start (name, url, emitter) {
   const fixedTimer = 10 * 1000 // 10 seconds
 
@@ -27,25 +50,4 @@ async function pollFeed (name, url, emitter) {
   return feed
 }
 
-export function createClient (emitter, data) {
-  const feeds = {}
-  const client = {
-    startFeed: function ({ name, url }) {
-      const key = createFeedKey(name, url)
-      feeds[createFeedKey(name, url)] = feeds[key] || start(name, url, emitter)
-      return feeds[key]
-    },
-    stopFeed: function ({ name, url }) {
-      const key = createFeedKey(name, url)
-      if (feeds[key]) {
-        clearTimeout(feeds[key].timer)
-        delete feeds[key]
-      }
-    },
-    poll: async function ({ name, url }) {
-      return pollFeed(name, url, emitter)
-    }
-  }
-  Object.values(data).map((value) => client.startFeed(value))
-  return client
-}
+

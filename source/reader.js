@@ -1,4 +1,4 @@
-import { defineElements } from './define-elements.js'
+import { defineElements } from './utils/define-elements.js'
 import { createStore, eventUpdateCurrentList, eventRSSChannelsUpdates } from './rss/index.js'
 import { elements } from './elements/index.js'
 
