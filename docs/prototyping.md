@@ -1,6 +1,9 @@
 Prototyping with Web Components - RSS Reader - part (1). (events, client, store, elements)
 ---------------------------------------------------------------------------------------
-We are about to embark on an exploration journey, down the path of prototyping an application using web components, es6 modules, event target, bit cli and what not. In this blog post series I plan to introduce to you this vibrant web standard called Web Components in a way of joined discovery. Here, we will learn together how to use web components and explore some additional goodies. By all means I'm no expert in the field and would love to see inputs from the community on how this work can and should improve.
+We are about to embark on an exploration journey, down the path of prototyping an application using web components, es6 modules, event target, bit cli and what not. In this blog post series I plan to introduce to you this vibrant web standard called Web Components in a way of joined discovery. Here, we will learn together how to use web components and explore some additional goodies. By all means, I'm no expert in the field and would love to see inputs from the community on how this work can and should improve. Our end result will look as following:
+
+![RSS Reader](/../assets/end-result.png?raw=true "RSS Reader")
+
 
 Web Components - Why ?
 -----------------------------
@@ -8,23 +11,23 @@ Web Components - Why ?
 
  1. Future proofing - They used to call it javascript fatigue, but that term has fallen out of grace. Now, sometimes I hear people speak in the terms of future proofing. One of the main reasons to go down this road is that these UI components are a standard, and supported by the browser. In the short history of the web, choosing the standard has proven useful. Developers remember this.
 
- 2. Framework agnostic - What do you do when you have several teams, working on a big application with a few libraries like vue and react. Some times you would like the same functionality across all those libraries and this feat is hard to reach. Sometimes you have multiple teams on different versions of react which require the same component.
+ 2. Framework agnostic - What do you do when you have several teams, working on a big application with a few libraries like Vue and React. Some times you would like the same functionality across all those libraries and this feat is hard to reach. Sometimes you have multiple teams on different versions of React which require the same component.
 
  3. Reusable design system - Another perspective for framework agnostic components is when you need to create a design system for your team. Web components seems like the most sane way to achieve that.
 
- 4. Bundle size, why should I ship something which the browser can already do. VDOM rendering is and was mind blowing concept, but this can achieve much more. Now don't get me wrong, react is more mature and ready in terms of API usage and supporting echo system, but sometimes size really matters.
+ 4. Bundle size, why should I ship something which the browser can already do. VDOM rendering is and was a mind blowing concept, but this can achieve much more. Now don't get me wrong, React is more mature and ready in terms of API usage and supporting libraries, but sometimes size really matters.
 
 What are web components ?
 ---------------------------
-In it's core, web components allow you to develop an encapsulated component from the rest of the document. A vanilla way to do things. This document isn't meant to be a full blown guide to the web components API, there are many others [TODO: insert links]. Never the less this is is the main offering of web components:
+In it's core, web components allow you to develop an encapsulated component from the rest of the document. A vanilla way to do things. This document isn't meant to be a full blown guide to the web components API, there are many others [TODO: insert links]. Never the less this is the main offering of web components:
 
 1. Custom Element - Javascript API which allows you to define a new kind of html tag, specific to your component collection.
 
-2. HTML templates - introduction the `<template>` and `<slot>` tags a you can specify the layout of the template.
+2. HTML templates - introducing the `<template>` and `<slot>` tags, which allow you to specify the layout of the template.
 
 3. Shadow DOM - or as I call it, the "mini dom" which is specific to your component. Some kind of an isolated environment for your component DOM, separated from the rest of the document.
 
-These 3 API's together allow you to encapsulate the functionality of a component and isolate it from the rest of the APP in ease.
+These 3 API's together allow you to encapsulate the functionality of a component and isolate it from the rest of the APP with ease.
 It also allows you to essentially extend your DOM api with additional tags.
 
 How does lit work ?
@@ -49,24 +52,121 @@ directly in the browser. In the case of lit a render function inside a lit eleme
 
 for more information on the lit syntax I suggest your read from their docs [here](https://lit-html.polymer-project.org/guide/template-reference).
 
- -  lit-element - base class for components. In the modern era we need to manage the life cycle of the component. Yea, we can do this from javascript without any abstractions on top of that. What lit-element does for us is give us a way to define props, hook to component lifcycle and unified component interface.
+ -  lit-element - base class for components. In the modern era we need to manage the life cycle of the component. Yea, we can do this from javascript without any abstractions on top of that. What lit-element does for us is give us a way to define props, hook to component lifecycle and unified component interface.
  We will go over a component later with more details.
 
-RSS-Reader - this is so 2006 (5,4,3) ?
+for a bit deeper dive let's look at the nav-bar component:
+```javascript
+// imports are all es6 modules
+import { html, LitElement } from 'https://unpkg.com/lit-element?module'
+import { createEvent, eventChangeCurrent } from '../rss/events.js'
+
+// we extend the LitElement component to have a common life cycle.
+export class NavBar extends LitElement {
+
+// lit uses this static function to track the properties the component needs to receive
+// every time these properties change it will re-render.
+  static get properties () {
+    return {
+      list: { type: Array }, // notice we use the built in Array class as type
+      emitter: { type: Object }
+    }
+  }
+
+  constructor () {
+    super()
+    this.list = [] // we need to initialize our properties
+    this.emitter = {}
+    this.changeCurrent = this.changeCurrent.bind(this) // bind changeCurrent before passing it to lit
+                                                       // you should always bind once.
+  }
+
+    // click handler.
+  changeCurrent (e) {
+    const { url, name } = e
+    // like in our rss client, all communication is done via event emitters
+    this.emitter.dispatchEvent(createEvent(eventChangeCurrent, { name, url }))
+  }
+
+  render () {
+    // we return an html function call to parse our html template
+    return html`
+      <nav>
+        <!-- inner lit components are composed with another template -->
+        ${this.list.map((listItem) => html`
+        <!-- all custom element must use a '-' in the name, so the browser will ignore them on initial rendering-->
+        <nav-item
+        <!-- syntax for binding an event handler -->
+          @click=${this.changeCurrent}
+        <!-- pass in properties as attributes on the -->
+          changeCurrent=${this.changeCurrent}
+          url=${listItem.url}
+          name=${listItem.name}>
+        </nav-item>`)}
+      </nav>
+    `
+  }
+}
+
+// in most code examples you would see `window.customElements.define`call to
+// register the component in the browser. I see this as breaking encapsulation.
+// This is not lit faults, it's part of the spec which can improve.
+```
+
+RSS-Reader - this is so 1999 ?
 -----------------------------
-When considering the example we would explore, a todo app came to mind. Yes, it is a great example done many times over. It has become some what of the "hello world" for any UI based technology. Yet, I felt not only it's been explored and lacks the meat sort to speak of a real world app. I wanted to create a concise enough example to discuss freely over blog posts, and a broad enough to provide real value. Hence our friendly RSS reader came to mind. So without further ado here is the project.
+When considering the example we would explore, a todo app came to mind. Yes, it is a great example done many times over. It has become some what of the "hello world" for any UI based technology. Yet, I felt not only it's been explored and lacks the meat, sort to speak, of a real world app. I wanted to create a concise enough example to discuss freely over blog posts, and broad enough to provide real value. Hence our friendly RSS reader came to mind. For those of you unfamiliar with RSS, it is a syndication protocol created in the turn of the century to allow users and application access to updates of online content. I've been using it for years to keep tabs on blogs and forums which I like. So without further ado ...
 
 You can can find the source code of the project in this [repository](https://github.com/qballer/rss-reader). I encourage you to find my code smells, and offer pull requests, which will improve this guide. The highlights would be mentions in future blog post about this application. like I mentioned earlier this is a joined exploration, and any contributions are welcomed.
 
 Some general design decision:
-1. Lit-element - this project is using the fine work of lit-html and lit-element by the polymer team. It seems like a great library to work with on top the web component standard which takes away a lot of boilerplate pain. Its important to note that lit was heavily inspired by [hyper](https://html.spec.whatwg.org/multipage/custom-elements.html#custom-elements-api) another great library worth exploring.
-2. Bundle free (almost) - Whishing to explore some more new features of the web, this project utilize es6 modules heavily. This is but with one exception to the rule, the RSS parser by (todo: enter link) is a "normal" browser package.
+1. Lit-element - this project is using the fine work of lit-html and lit-element by the polymer team. It seems like a great library to work with on top the web component standard which takes away a lot of boilerplate pain. It's important to note that lit was heavily inspired by [hyper](https://html.spec.whatwg.org/multipage/custom-elements.html#custom-elements-api), another great library worth exploring.
+2. Bundle free (almost) - Whishing to explore some more new features of the web, this project utilize es6 modules heavily. This is but with one exception to the rule, the [RSS parser](https://github.com/bobby-brennan/rss-parser#readme) by bobby-brennan is a "normal" browser package.
 3. Browser only - this project doesn't have a backend component because I feel Server Side Rendering is a topic for a different post which will go in more details.
 4. All modules are made available on the [bit.dev](https://bit.dev) component platform for future reuse. The bit cli and and platform (which is my full time job) is one of the best ways to share JS components in general and web components specifically. It also has the great benefit of encouraging modularity.
-5. This project uses timers and `eventTarget` heavily instead of workers. Workers don't play well with es6 modules (yet? TODO: enter FF/Chrome issues). When those reach to full working state, I would be more than happy refactor.
-6. This repos is in the prototyping phase and so it doesn't contain tests. I believe in tests, and will insert them in the future. This may go against TDD but I feel wouldn't contribute to the learning process currently. When it would be added I will share the refactoring needed to introduce tests.
+5. This project uses timers and `eventTarget` heavily instead of workers. Workers don't play well with es6 modules (yet? TODO: enter FF/Chrome issues). When those reach to full working state, I would be more than happy to refactor.
+6. This repo is in the prototyping phase and so it doesn't contain tests. I believe in tests, and will insert them in the future. This may go against TDD but I feel wouldn't contribute to the learning process currently. When it would be added I will share the refactoring needed to introduce tests.
 
-Project Structure - taking modulraity to heart.
+Lets review the main entry points of the app to grasp what going on.
+`index.html`
+```html
+<html>
+    <head>
+        <title>RSS Reader</title>
+        <style>
+            main {
+                display: flex;
+            }
+            nav-bar {
+                margin-right: 20px
+            }
+        </style>
+    </head>
+    <body>
+
+        <main id="main-app">
+            <!-- two main components one for the left panel
+                 and one for rendering the rss items  -->
+            <nav-bar id="side-bar"></nav-bar>
+            <item-list id="main-list"></item-list>
+        </main>
+        <!-- non es module to have RSS parser-->
+        <script src="https://unpkg.com/rss-parser@3.7.0/dist/rss-parser.js"></script>
+        <script type="module">
+            import { main } from '/source/reader.js'
+            main()
+        </script>
+    </body>
+</html>
+```
+
+You can see
+
+`reader.js`
+```javascript
+
+```
+Project Structure - taking modularity to heart.
 -----------------------------
 1. `index.html` - as the main layout of the project.
 2. `reader.js` - the main javascript file of the project, setting up event emitters.
@@ -76,19 +176,19 @@ Project Structure - taking modulraity to heart.
    3. `rss-item.js/nav-item.js` - representing a single fragment inside their respective lists.
 4. rss folder
    1. `events.js` - containing all event names and event creation function.
-   2. `feed-key.js` - function for creating a uniqe feed key in the store.
+   2. `feed-key.js` - function for creating a unique feed key in the store.
    3. `rss-client.js` - get and parse rss feeds.
    4. `rss-store` - the application main state.
 5. utils folder
    1. `defer-function.js` used to make dispatch events async.
    2. `define-elements.js` - escape web components global as much as possible.
 
-Whats worth noting about the structure of the app, is that it has modularity at heart. All the folders in the project basically contain components of different kinds. Our main drive for reusability is the bit CLI. Bit is a tool which helps your write more modular code, it does so managing the source code and dependencies of a component. Since I've started working with bit it has impacted the way I was thinking about modularity and separation of concerns in a deep way. Bit won't save you from writing bad code, but the add and export process forces you to at least consider it. The added benefit is that you can share components between future projects, or existing ones.
+It's worth noting that the structure of the app, is that it has modularity at heart. All the folders in the project basically contain components of different kinds. Our main drive for reusability is the bit CLI. Bit is a tool which helps your write more modular code, it does so managing the source code and dependencies of a component. Since I've started working with bit it has impacted the way I think about modularity and separation of concerns in a deep way. Bit won't save you from writing bad code, but the `add` and `export` process forces you to at least consider it. The added benefit is that you can share components between future projects, or existing ones.
 
 
 Highlights from the Reader
 -------------------------
-Lets go over two components from this app, in order to better.
+Lets go over two components from this app, in order to better understand [TODO:add stuff here].
 Here is the code for the rss client component.
 
 ```javascript
@@ -158,69 +258,10 @@ The main point to notice in this component is the inversion of control, main dep
 I've also used a setTimeout function which calls it's self as the main timer for the polling the feed. It happens here every 10s just to make things
 easier to debug.
 
-
-Here is the main code for the nav-bar component.
-```javascript
-// imports are all es6 modules
-import { html, LitElement } from 'https://unpkg.com/lit-element?module'
-import { createEvent, eventChangeCurrent } from '../rss/events.js'
-
-// we extend the LitElement component to have a common life cycle.
-export class NavBar extends LitElement {
-
-// lit uses this static function to track the properties the component needs to recieve
-// every time these properties change it will re-render.
-  static get properties () {
-    return {
-      list: { type: Array }, // notice we use the built in Array class as type
-      emitter: { type: Object }
-    }
-  }
-
-  constructor () {
-    super()
-    this.list = [] // we need to initialize our properties
-    this.emitter = {}
-    this.changeCurrent = this.changeCurrent.bind(this) // bind changeCurrent before passing it to lit int the render function
-  }
-
-    // click handler.
-  changeCurrent (e) {
-    const { url, name } = e
-    // like in our rss client, all communication is done via event emitters
-    this.emitter.dispatchEvent(createEvent(eventChangeCurrent, { name, url }))
-  }
-
-  render () {
-    // we return an html function call to parse our html template
-    return html`
-      <nav>
-        <!-- inner lit components are composed with another template -->
-        ${this.list.map((listItem) => html`
-        <!-- all custom element must use a '-' in the name, so the browser will ignore them on initial rendering-->
-        <nav-item
-        <!-- syntax for binding an event handler -->
-          @click=${this.changeCurrent}
-        <!-- pass in properties as attributes on the -->
-          changeCurrent=${this.changeCurrent}
-          url=${listItem.url}
-          name=${listItem.name}>
-        </nav-item>`)}
-      </nav>
-    `
-  }
-}
-
-// in most code example you would see window.customElements.define call to
-// register the component in the browser. I see this as a bad habit to use global.
-// 
-```
-
-some issues on web components
+Issues encountered writing this blog post
 -----------------------------
-1. lit element static html rendering - unsafeHtml
-2. customElements.define is global.
-3. not so simple to reuse.
-4. es6 modules .js files
+1. customElements.define is global.
+2. not so simple to reuse.
+3. es6 modules .js files
 
 
