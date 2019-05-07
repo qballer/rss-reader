@@ -34,6 +34,7 @@ How does lit work ?
 -----------------------------
 Lit is an abstraction on top of the vanilla api which provides two main things:
  - lit-html a library for html templating. This library provides an easy way to create html template. It basically allows you to create re-useable html templates in the javascript context. The library uses a great feature called tagged templates, shipped with es6 which looks like this:
+-
 ```javascript
     tag`some ${boilerPlate} in my string`
 ```
@@ -124,7 +125,7 @@ Some general design decision:
 2. Bundle free (almost) - Whishing to explore some more new features of the web, this project utilize es6 modules heavily. This is but with one exception to the rule, the [RSS parser](https://github.com/bobby-brennan/rss-parser#readme) by bobby-brennan is a "normal" browser package.
 3. Browser only - this project doesn't have a backend component because I feel Server Side Rendering is a topic for a different post which will go in more details.
 4. All modules are made available on the [bit.dev](https://bit.dev) component platform for future reuse. The bit cli and and platform (which is my full time job) is one of the best ways to share JS components in general and web components specifically. It also has the great benefit of encouraging modularity.
-5. This project uses timers and `eventTarget` heavily instead of workers. Workers don't play well with es6 modules (yet? TODO: enter FF/Chrome issues). When those reach to full working state, I would be more than happy to refactor.
+5. This project uses timers and `eventTarget` heavily instead of workers. Workers don't play well with es6 modules. When those reach to full working state, I would be more than happy to refactor.
 6. This repo is in the prototyping phase and so it doesn't contain tests. I believe in tests, and will insert them in the future. This may go against TDD but I feel wouldn't contribute to the learning process currently. When it would be added I will share the refactoring needed to introduce tests.
 
 Lets review the main entry points of the app to grasp what going on.
@@ -170,6 +171,10 @@ export function main () {
   topLevelRender(store.getSideBarList(), '#side-bar', store.emitter) // render side-bar.
 }
 ```
+
+The gist of things is that everything communicates via events and that way every component in the app is independent.
+For the rest of the app view the repo.
+
 Project Structure - taking modularity to heart.
 -----------------------------
 1. `index.html` - as the main layout of the project.
@@ -177,7 +182,7 @@ Project Structure - taking modularity to heart.
 3. elements folder - lit-element web components.
    1. `item-list.js` - the feed item list rendering the current selected feed.
    2. `nav-bar.js` - edit feeds and consume them.
-   3. `rss-item.js/nav-item.js` - representing a single fragment inside their respective lists.
+   3. `rss-item.js/nav-item.js  ` - representing a single fragment inside their respective lists.
 4. rss folder
    1. `events.js` - containing all event names and event creation function.
    2. `feed-key.js` - function for creating a unique feed key in the store.
@@ -189,11 +194,7 @@ Project Structure - taking modularity to heart.
 
 It's worth noting that the structure of the app, is that it has modularity at heart. All the folders in the project basically contain components of different kinds. Our main drive for reusability is the bit CLI. Bit is a tool which helps your write more modular code, it does so managing the source code and dependencies of a component. Since I've started working with bit it has impacted the way I think about modularity and separation of concerns in a deep way. Bit won't save you from writing bad code, but the `add` and `export` process forces you to at least consider it. The added benefit is that you can share components between future projects, or existing ones.
 
-
-Highlights from the Reader
--------------------------
-Lets go over two components from this app, in order to better understand [TODO:add stuff here].
-Here is the code for the rss client component.
+Lets dive into another component. Here is the code for the rss client component.
 
 ```javascript
 
@@ -258,13 +259,11 @@ async function pollFeed (name, url, emitter) {
 }
 ```
 
-The main point to notice in this component is the inversion of control, main dependencies of the client are received in the factory function.
-I've also used a setTimeout function which calls it's self as the main timer for the polling the feed. It happens here every 10s just to make things
-easier to debug.
+The main point to notice in this component is the inversion of control, main dependencies of the client are received in the factory function. I've also used a setTimeout function which calls it's self as the main timer for the polling the feed. It happens here every 10s just to make things easier to debug.
 
 Issues encountered writing this blog post
 -----------------------------
-1. customElements.define is global.
+1. customElements.define is global. Like mentioned earlier
 2. not so simple to reuse.
 3. es6 modules .js files
 

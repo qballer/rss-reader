@@ -1,7 +1,7 @@
-ReadRSS
+rss-reader
 -------
-An RSS client leveraging web components and the bit CLI.
-All components are meant to be sharable and utilize the bit cli platform to leverage that.
+An RSS reader leveraging web components and the bit CLI.
+All components are meant to be sharable and utilize the [bit](https://github.com/teambit/bit) cli platform to leverage that.
 
 Why ?
 ----
@@ -9,7 +9,8 @@ For a while now I've been wanting to build an RSS reader which is pure browser a
 
 RSS Blog Series
 ---------------
-1. Prototyping Web Components - RSS overview - part (1). (events, client, store, elements)
+1. Prototyping Web Components - RSS overview - part (1).
+
 (more posts as we go along)
 
 Structure:
@@ -18,9 +19,14 @@ Structure:
 3. Source - containing all components, utilities required to run the app.
 4. tests - component testing shared via puppeteer.
 
+Install
+------
+1. clone the project.
+2. ```npm i```
+
 Tests
 -----
 ```bash
-npm run test - only linting, prototype phase.
+npm run test # only linting, prototype phase.
 ```
 

@@ -23,6 +23,11 @@ export class NavItem extends LitElement {
 
   render () {
     return html`
+        <style>
+          div {
+            cursor: pointer
+          }
+        </style>
         <div @click=${this.enrichChangeEvent}>${this.name}</div>
     `
   }
